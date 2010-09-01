@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFConsoleApplication1", "MFConsoleApplication1\MFConsoleApplication1.csproj", "{C798DD66-FE73-460F-819A-DBF2859E1E9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{B404EDD4-6548-422C-B126-3438F148A35D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMU_Test", "IMU_Test\IMU_Test.csproj", "{CD0647A2-BA61-4167-9AF6-F6A15D3A1192}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadroLib", "QuadroLib\QuadroLib.csproj", "{21D476DC-C80A-4148-BF14-CC0B4E855694}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadConfig", "QuadConfig\QuadConfig.csproj", "{162922FC-549E-4ECF-932C-5D01C08E694A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C798DD66-FE73-460F-819A-DBF2859E1E9E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B404EDD4-6548-422C-B126-3438F148A35D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B404EDD4-6548-422C-B126-3438F148A35D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B404EDD4-6548-422C-B126-3438F148A35D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B404EDD4-6548-422C-B126-3438F148A35D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD0647A2-BA61-4167-9AF6-F6A15D3A1192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0647A2-BA61-4167-9AF6-F6A15D3A1192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0647A2-BA61-4167-9AF6-F6A15D3A1192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0647A2-BA61-4167-9AF6-F6A15D3A1192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21D476DC-C80A-4148-BF14-CC0B4E855694}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21D476DC-C80A-4148-BF14-CC0B4E855694}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21D476DC-C80A-4148-BF14-CC0B4E855694}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21D476DC-C80A-4148-BF14-CC0B4E855694}.Release|Any CPU.Build.0 = Release|Any CPU
+		{162922FC-549E-4ECF-932C-5D01C08E694A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{162922FC-549E-4ECF-932C-5D01C08E694A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{162922FC-549E-4ECF-932C-5D01C08E694A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{162922FC-549E-4ECF-932C-5D01C08E694A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+EndGlobal
