@@ -16,7 +16,7 @@ namespace QuadroLib.Ahrs {
     /// Bevor aktuelle Daten verarbeitet werden können muss die ParseData() Methode
     /// Aufgerufen werden.
     /// </summary>
-    public class RazorAhrs {
+    public class RazorAhrs : IAhrs {
         private readonly SerialPort _port;
 #if MF
         private readonly Cpu.Pin _dtr;
@@ -72,6 +72,7 @@ namespace QuadroLib.Ahrs {
         public RazorAhrs(string com, bool parseAnalogs) {
             _parseAnalogs = parseAnalogs;
             this._port = new SerialPort(com, 57600, Parity.None, 8, StopBits.One);
+            this.Initialize();
         }
 
 #if MF
@@ -90,11 +91,7 @@ namespace QuadroLib.Ahrs {
             set { this._applyOffsets = value; }
         }
 
-        public void Initialize() {
-            this.Initialize(true);
-        }
-
-        public void Initialize(bool reset) {
+        private void Initialize(bool reset = true) {
             this._port.ReadTimeout = 0;
             this._port.ErrorReceived += PortErrorReceived;
             if (reset) {
@@ -265,6 +262,24 @@ namespace QuadroLib.Ahrs {
                     this.MagZ = FastNumberParse.ParseInt(this._parseBuffer, ref i);
                 }
             }
+        }
+
+        void IAhrs.Get(out double roll, out double pitch, out double yaw) {
+            roll = this.Roll;
+            pitch = this.Pitch;
+            yaw = this.Yaw;
+        }
+
+        void IAhrs.Analogs(out double x, out double y, out double z) {
+            x = this.AnX;
+            y = this.AnY;
+            z = this.AnZ;
+        }
+
+        void IAhrs.Acc(out double x, out double y, out double z) {
+            x = this.AccX;
+            y = this.AccY;
+            z = this.AccZ;
         }
     }
 }

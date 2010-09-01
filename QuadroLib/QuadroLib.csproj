@@ -34,6 +34,8 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="Ahrs\IAhrs.cs" />
+    <Compile Include="Control\IPid.cs" />
     <Compile Include="Input\AnalogChannel.cs" />
     <Compile Include="Ahrs\ArduImu.cs" />
     <Compile Include="Input\BooleanChannel.cs" />
@@ -41,8 +43,8 @@
     <Compile Include="Enums.cs" />
     <Compile Include="MotorAxis.cs" />
     <Compile Include="MotorConfig.cs" />
-    <Compile Include="Control\PID.cs" />
     <Compile Include="Control\PidControl.cs" />
+    <Compile Include="Control\PidControl2.cs" />
     <Compile Include="PlusMotorConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Input\PwmIn.cs" />

@@ -4,7 +4,7 @@ using System.IO.Ports;
 using Extensions;
 
 namespace QuadroLib.Ahrs {
-    public class ArduImu {
+    public class ArduImu : IAhrs {
         private readonly SerialPort _port;
         private readonly byte[] IMU_buffer = new byte[30];
         private IMUState IMU_step = IMUState.ReadHeader1;
@@ -221,6 +221,24 @@ namespace QuadroLib.Ahrs {
             ReadPayload = 6,
             ReadChecksum1 = 7,
             ReadChecksum2 = 8
+        }
+
+        void IAhrs.Get(out double roll, out double pitch, out double yaw) {
+            roll = roll_sensor;
+            pitch = pitch_sensor;
+            yaw = ground_course;
+        }
+
+        void IAhrs.Analogs(out double x, out double y, out double z) {
+            x = analog_x;
+            y = analog_y;
+            z = analog_z;
+        }
+
+        void IAhrs.Acc(out double x, out double y, out double z) {
+            x = acc_x;
+            y = acc_y;
+            z = acc_z;
         }
     }
 }
