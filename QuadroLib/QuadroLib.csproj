@@ -35,7 +35,7 @@
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
     <Compile Include="Ahrs\IAhrs.cs" />
-    <Compile Include="Control\IPid.cs" />
+    <Compile Include="Control\IControl.cs" />
     <Compile Include="Input\AnalogChannel.cs" />
     <Compile Include="Ahrs\ArduImu.cs" />
     <Compile Include="Input\BooleanChannel.cs" />

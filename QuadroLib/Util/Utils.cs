@@ -12,10 +12,4 @@ namespace QuadroLib.Util {
             val = (inVal[0 + offset] << 0 | inVal[1 + offset] << 8 | inVal[2 + offset] << 16 | inVal[3 + offset] << 24);
         }
     }
-
-    public enum Periods : uint {
-        P50Hz = 20 * 1000000,
-        P400Hz = 25 * 100000,
-        P500Hz = 2 * 1000000,
-    }
 }

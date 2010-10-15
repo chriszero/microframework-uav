@@ -3,7 +3,7 @@ using System;
 using Extensions;
 
 namespace QuadroLib.Control {
-    public class PidControl : IPid {
+    public class PidControl : IControl {
         //scaled, tweaked parameters we'll actually be using
         private double accError; // * the (I)ntegral term is based on the sum of error over
         //   time.  this variable keeps track of that

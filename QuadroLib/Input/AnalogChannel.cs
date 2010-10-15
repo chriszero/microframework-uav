@@ -6,15 +6,18 @@ using Microsoft.SPOT.Hardware;
 namespace QuadroLib.Input {
     public class AnalogChannel : PwmIn {
         private readonly double _scale = 100.0;
-        // Standartwerte
-        private uint _negativeHightime = 1*10000;
-        private uint _neutralHightime = 15*1000;
-        private uint _positiveHightime = 2*10000;
-
-        public uint NeutralHysteresis = 2;
+        // defaults
+        private long _negativeHightime = 1*10000;
+        private long _neutralHightime = 15*1000;
+        private long _positiveHightime = 2*10000;
 
         /// <summary>
         /// 
+        /// </summary>
+        public uint NeutralHysteresis = 2;
+
+        /// <summary>
+        /// Actual position of the stick
         /// </summary>
         public short Position;
 
@@ -30,16 +33,16 @@ namespace QuadroLib.Input {
         }
 
         /// <summary>
-        /// 
+        /// Initializes an AnalogChannel and applies a scale
         /// </summary>
         /// <param name="pin">Interrupt Pin</param>
-        /// <param name="scale">+/- Scale zb 30°</param>
+        /// <param name="scale">+/- Scale eg. 30°</param>
         public AnalogChannel(Cpu.Pin pin, double scale)
             : this(pin) {
             _scale = scale;
         }
 
-        public uint NegativeHightime {
+        public long NegativeHightime {
             get { return this._negativeHightime; }
             set {
                 this._negativeHightime = value;
@@ -47,7 +50,7 @@ namespace QuadroLib.Input {
             }
         }
 
-        public uint NeutralHightime {
+        public long NeutralHightime {
             get { return this._neutralHightime; }
             set { 
                 this._neutralHightime = value;
@@ -55,26 +58,46 @@ namespace QuadroLib.Input {
             }
         }
 
-        public uint PositiveHightime {
+        public long PositiveHightime {
             get { return this._positiveHightime; }
             set {
                 this._positiveHightime = value;
                 this.Precalc();
             }
         }
-        
+
         /// <summary>
-        /// Zum Zwischenspeichern der Deltas, Wert ändert sich wärend der Laufzeit nicht
+        /// Leave stick in neutral position and call
+        /// </summary>
+        public void CalibrateNeutral() {
+            this.NeutralHightime = base.Hightime;
+        }
+
+        /// <summary>
+        /// Move stick to the left and call
+        /// </summary>
+        public void CalibrateLeft() {
+            this.NegativeHightime = base.Hightime;
+        }
+
+        /// <summary>
+        ///  Move stick to the right and call
+        /// </summary>
+        public void CalibrateRight() {
+            this.PositiveHightime = base.Hightime;
+        }
+
+        /// <summary>
+        /// Precalculate the deltas, they doesn't change during runtime, divides are evil ;)
         /// </summary>
         private void Precalc() {
-            // Precalculate Deltas
             this._deltaNegative = _scale / (this.NeutralHightime - this.NegativeHightime - this.NeutralHysteresis);
             this._deltaPositive = _scale / (this.PositiveHightime - this.NeutralHightime + this.NeutralHysteresis);
         }
 
         protected override void InPortOnInterrupt(uint port, uint state, DateTime time) {
             base.InPortOnInterrupt(port, state, time);
-            this.Position = (short)((this._neutralHightime < this.Hightime ? this._deltaPositive : this._deltaNegative) * (this.Hightime - this._neutralHightime));
+            this.Position = (short)((this._neutralHightime < base.Hightime ? this._deltaPositive : this._deltaNegative) * (base.Hightime - this._neutralHightime));
             //Debug.Print("Pos: " + this.Position);
         }
 

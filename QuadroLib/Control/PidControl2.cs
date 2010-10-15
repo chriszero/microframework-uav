@@ -1,6 +1,6 @@
 using System;
 namespace QuadroLib.Control {
-    public class PidControl2 : IPid {
+    public class PidControl2 : IControl {
         /// <summary>
         /// Total Gain
         /// </summary>
@@ -145,7 +145,7 @@ namespace QuadroLib.Control {
             this.Update(input, this._sampleTime);
             output = this.Cv;
         }
-
+        
         public void SetTunings(double Kc, double TauI, double TauD) {
             this.Kp = Kc;
             this.Ki = TauI;

@@ -4,18 +4,18 @@ using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 
 namespace QuadroLib.Input {
-    public class PwmIn {
+    public abstract class PwmIn {
         /// <summary>
         /// Ticks
         /// </summary>
-        public long Period = 1;
+        protected long Period = 1;
         /// <summary>
         /// Ticks
         /// </summary>
-        public long Hightime = 1;
+        protected long Hightime = 1;
 
         private readonly InterruptPort _inPort;
-        private DateTime _steigendeFlanke;
+        private DateTime _lastRisingEdge;
 
         /// <summary>
         /// 
@@ -24,27 +24,23 @@ namespace QuadroLib.Input {
         public PwmIn(Cpu.Pin pin) {
             this._inPort = new InterruptPort(pin,
                                         false,
-                                        Port.ResistorMode.PullUp,
+                                        Port.ResistorMode.Disabled,
                                         Port.InterruptMode.InterruptEdgeBoth
                 );
             this._inPort.OnInterrupt += this.InPortOnInterrupt;
         }
 
         protected virtual void InPortOnInterrupt(uint port, uint state, DateTime time) {
-            //Debug.Print("Port:" + port + " State:" + state + " Time:" + time);
-            switch (state) {
-                case 0:
-                    // Fallende Flanke
-                    this.Hightime = time.Ticks - this._steigendeFlanke.Ticks;
-                    //Debug.Print("Period: " + this.Period + " High:" + this.Hightime);
-                    break;
-                case 1:
-                    // Steigende Flanke
-                    this.Period = time.Ticks - this._steigendeFlanke.Ticks;
-                    this._steigendeFlanke = time;
-                    break;
+            if(state == 0) {
+                    // falling edge
+                    this.Hightime = time.Ticks - this._lastRisingEdge.Ticks;
             }
-            this._inPort.ClearInterrupt();
+            else {
+                    // rising edge
+                    this.Period = time.Ticks - this._lastRisingEdge.Ticks;
+                    this._lastRisingEdge = time;
+            }
+            //this._inPort.ClearInterrupt();
         }
     }
 }

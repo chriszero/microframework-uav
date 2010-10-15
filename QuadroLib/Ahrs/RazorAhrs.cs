@@ -12,9 +12,8 @@ using Extensions;
 
 namespace QuadroLib.Ahrs {
     /// <summary>
-    /// Klasse zum Verarbeiten des Seriellem Sparkfun 9DOF Razor AHRS </br>
-    /// Bevor aktuelle Daten verarbeitet werden können muss die ParseData() Methode
-    /// Aufgerufen werden.
+    /// Class to parse serial output of Sparkfun 9DOF Razor AHRS
+    /// Call ParseData() before you want to use new data!
     /// </summary>
     public class RazorAhrs : IAhrs {
         private readonly SerialPort _port;
@@ -67,8 +66,8 @@ namespace QuadroLib.Ahrs {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="com">Comport</param>
-        /// <param name="parseAnalogs">true, wenn auch die Analogdaten der Gyros ermittelt werden sollen</param>
+        /// <param name="com">comport "com1"</param>
+        /// <param name="parseAnalogs">true, if the analogdata of the gyros should also be parsed</param>
         public RazorAhrs(string com, bool parseAnalogs) {
             _parseAnalogs = parseAnalogs;
             this._port = new SerialPort(com, 57600, Parity.None, 8, StopBits.One);
@@ -84,7 +83,7 @@ namespace QuadroLib.Ahrs {
         private bool _applyOffsets = true;
 
         /// <summary>
-        /// Legt fest ob die Offsets gleich verrechnet werden sollen
+        /// Defines if the offsets should be applied to the parsed data
         /// </summary>
         public bool ApplyOffsets {
             get { return this._applyOffsets; }
@@ -141,13 +140,13 @@ namespace QuadroLib.Ahrs {
                             this._receivedChars[this._receiveIndex] == '\n') {
                             // Full line
                             
-                            if (this._receiveIndex > 2) { // mehr als nur \r\n ?
+                            if (this._receiveIndex > 2) { // more than \r\n ?
                                 Debug.Print("X: " + this._receivedChars[this._receiveIndex]);
                                 Array.Copy(this._receivedChars, this._parseBuffer, this._receiveIndex);
                                 ParseOffset(out Offsets[offsetIndex++], this._parseBuffer);
                                 this._receiveIndex = 0;
                                 if (offsetIndex >= 6) {
-                                    // Alle 6 Offsets erhalten
+                                    // received all 6 offsets
                                     _imuState = ParserState.FindPre;
                                 }
                             }
@@ -179,7 +178,7 @@ namespace QuadroLib.Ahrs {
                                     this.HasValidData = true;
                                 }
                                 this._haveToParse = true;
-                                //this.ParseData();
+                                //this.ParseData(); // parse not always, only just in time
                             }
                             this._receiveIndex = 0;
                             this._imuState = ParserState.FindPre;
@@ -210,8 +209,8 @@ namespace QuadroLib.Ahrs {
         }
 
         /// <summary>
-        /// Parst die Empfangenen Daten des AHRS
-        /// Vom Mainthread aus aufrufen bevor die Daten verarbeitet werden sollen
+        /// Parses the received data
+        /// Call it just before you use the data
         /// </summary>
         public void ParseData() {
             if (!_haveToParse) {
@@ -265,18 +264,21 @@ namespace QuadroLib.Ahrs {
         }
 
         void IAhrs.Get(out double roll, out double pitch, out double yaw) {
+            ParseData();
             roll = this.Roll;
             pitch = this.Pitch;
             yaw = this.Yaw;
         }
 
         void IAhrs.Analogs(out double x, out double y, out double z) {
+            ParseData();
             x = this.AnX;
             y = this.AnY;
             z = this.AnZ;
         }
 
         void IAhrs.Acc(out double x, out double y, out double z) {
+            ParseData();
             x = this.AccX;
             y = this.AccY;
             z = this.AccZ;

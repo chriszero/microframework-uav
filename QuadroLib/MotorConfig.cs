@@ -12,14 +12,21 @@ namespace QuadroLib {
         /// <summary>
         /// Roll Pid
         /// </summary>
-        protected IPid _rollPid;
+        protected IControl _rollPid;
         /// <summary>
         /// Pitch Pid
         /// </summary>
-        protected IPid _pitchPid;
+        protected IControl _pitchPid;
         /// <summary>
         /// Yaw / Kurs Pid
         /// </summary>
-        protected IPid _yawPid;
+        protected IControl _yawPid;
+
+        public MotorConfig(IAhrs ahrs, IControl roll, IControl pitch, IControl yaw) {
+            _ahrs = ahrs;
+            _rollPid = roll;
+            _pitchPid = pitch;
+            _yawPid = yaw;
+        }
     }
 }
