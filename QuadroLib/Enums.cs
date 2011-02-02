@@ -1,18 +1,22 @@
 ﻿
 
-namespace QuadroLib {
+namespace QuadroLib
+{
 
-    public enum Axis {
+    public enum Axis
+    {
         Pitch,
         Roll,
         Yaw
     }
 
-    public enum Motors {
+    public enum Motors
+    {
         Left,
         Right,
         Front,
         Rear
     }
+
 
 }

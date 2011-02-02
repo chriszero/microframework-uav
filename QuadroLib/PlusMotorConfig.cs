@@ -33,11 +33,21 @@ namespace QuadroLib {
         public void Compute(double rollPos, double pitchPos, double yawPos) {
             double roll, pitch, yaw;
             double powerRoll, powerPitch, powerYaw;
+
             _ahrs.Get(out roll, out pitch, out yaw);
 
             _rollPid.Compute(rollPos, roll, out powerRoll);
             _pitchPid.Compute(pitchPos, pitch, out powerPitch);
             _yawPid.Compute(yawPos, yaw, out powerYaw);
+
+            // drehzahlen einstellen
+        }
+
+        /// <summary>
+        /// Start prozeduren
+        /// </summary>
+        public void StartUp() {
+
         }
     }
 }

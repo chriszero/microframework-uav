@@ -12,7 +12,7 @@ namespace QuadroLib {
 
         private readonly int[] _motorCommand = new int[2];
 
-        public MotorAxis(PWM.Pin leftMotorPin, PWM.Pin rightMotorPin, QuadroLib.Util.Periods period) {
+        public MotorAxis(PWM.Pin leftMotorPin, PWM.Pin rightMotorPin, Periods period) {
             _left = new BrushlessMotor(leftMotorPin, period);
             _right = new BrushlessMotor(rightMotorPin, period);
             this.LockMotors();

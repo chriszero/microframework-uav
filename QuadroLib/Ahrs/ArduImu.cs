@@ -1,7 +1,9 @@
 using System;
-using Microsoft.SPOT;
 using System.IO.Ports;
-using Extensions;
+using System.Diagnostics;
+using Microsoft.SPOT;
+using Microsoft.SPOT.Hardware;
+using System.Threading;
 
 namespace QuadroLib.Ahrs {
     public class ArduImu : IAhrs {
@@ -10,6 +12,10 @@ namespace QuadroLib.Ahrs {
         private IMUState IMU_step = IMUState.ReadHeader1;
         private byte payload_length = 0;
         private byte payload_counter = 0;
+        private byte message_num = 0;
+
+        private readonly Collections.CircularByteBuffer _receiveBuffer = new Collections.CircularByteBuffer(256);
+        private readonly byte[] _buf = new byte[256];
 
         //IMU Checksum
         private byte ck_a = 0;
@@ -36,8 +42,7 @@ namespace QuadroLib.Ahrs {
 
         public ArduImu(string port) {
             _port = new SerialPort(port, 57600);
-            //_port = new SerialPort(port, 38400);
-
+            _port.Handshake = Handshake.RequestToSend;
             this._port.ReadTimeout = 0;
             this._port.ErrorReceived += PortErrorReceived;
             this._port.Open();  // If you open the port after you set the event you will endup with problems
@@ -45,24 +50,34 @@ namespace QuadroLib.Ahrs {
             this._port.DataReceived += PortDataReceived;
         }
 
-        private void PortErrorReceived(object sender, SerialErrorReceivedEventArgs e) {
-            //Console.WriteLine("Error: {0}", e.EventType);
+        public static void Reset(Cpu.Pin resetPin) {
+            OutputPort dtr = new OutputPort(resetPin, false);
+            Thread.Sleep(1);
+            dtr.Write(true);
+            dtr.Dispose();
         }
-        
+
+        private void PortErrorReceived(object sender, SerialErrorReceivedEventArgs e) {
+            Debug.Print("Error: " + (e.EventType == SerialError.RXOver ? "RXOver" : e.EventType.ToString() ));
+            if (e.EventType == SerialError.RXOver)
+                _port.DiscardInBuffer();
+        }
+
         private void PortDataReceived(object sender, SerialDataReceivedEventArgs e) {
             int numc = 0;
-            byte message_num = 0;
             byte data;
 
-            numc = _port.BytesToRead;
-            if (numc > 0) {
-                for (int i = 0; i < numc; i++) {	// Process bytes received
-                    data = _port.ReadByte();
+            if (_port.BytesToRead > 0) {
+                numc = _port.Read(_buf, 0, System.Math.Min(_buf.Length, _port.BytesToRead));
+                _receiveBuffer.Put(_buf, 0, numc);
+                for (int i = 0; i < numc; i++) {
+                    // Process bytes received
+                    data = _receiveBuffer.Get();
                     switch (IMU_step) {	 	//Normally we start from zero. This is a state machine
                         case IMUState.ReadHeader1:
                             if (data == 0x44) {
                                 IMU_step++; //First byte of data packet header is correct, so jump to the next step
-                            } 
+                            }
                             break;
 
                         case IMUState.ReadHeader2:
@@ -163,42 +178,47 @@ namespace QuadroLib.Ahrs {
 
         private void checksum(byte data) {
             ck_a += data;
-            ck_b += ck_a; 
+            ck_b += ck_a;
         }
 
         private void IMU_join_data() {
+            /*
+             * (short)((IMU_buffer[0] << 8) | IMU_buffer[1]); // BigEndian
+             * (short)(IMU_buffer[0] | (IMU_buffer[1] << 8)); // LittleEndian
+             */
             imu_messages_received++;
-            int j = 0;
 
             //Storing IMU roll
-            roll_sensor = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]) / 100.0;
+            roll_sensor = (short)(IMU_buffer[0] | (IMU_buffer[1] << 8)) * 0.01;
+            //roll_sensor *= 0.01; // 1/100
 
             //Storing IMU pitch
-            pitch_sensor = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]) / 100.0;
+            pitch_sensor = ((short)(IMU_buffer[2] | (IMU_buffer[3] << 8))) * 0.01;
+            //pitch_sensor *= 0.01;
 
             //Storing IMU heading (yaw)
-            ground_course = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]) / 100.0;
+            ground_course = ((short)(IMU_buffer[4] | (IMU_buffer[5] << 8))) * 0.01;
 
             imu_ok = true;
         }
 
         private void IMUAnalogs_join_data() {
             imu_messages_received++;
-            int j = 0;
+            //int j = 0;
 
             // Analog x
-            analog_x = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            analog_x = (short)((IMU_buffer[0] << 8) | IMU_buffer[1]);
             // Analog y
-            analog_y = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            analog_y = (short)((IMU_buffer[2] << 8) | IMU_buffer[3]);
             // Analog z
-            analog_z = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            analog_z = (short)((IMU_buffer[4] << 8) | IMU_buffer[5]);
 
             // Acc x
-            acc_x = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            acc_x = (short)((IMU_buffer[6] << 8) | IMU_buffer[7]);
             // Acc y
-            acc_y = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            acc_y = (short)((IMU_buffer[8] << 8) | IMU_buffer[9]);
             // Acc z
-            acc_z = (short)((IMU_buffer[j++] << 8) | IMU_buffer[j++]);
+            acc_z = (short)((IMU_buffer[10] << 8) | IMU_buffer[11]);
 
             imuAnalogs_ok = true;
         }
@@ -223,10 +243,10 @@ namespace QuadroLib.Ahrs {
             ReadChecksum2 = 8
         }
 
-        void IAhrs.Get(out double roll, out double pitch, out double yaw) {
+        void IAhrs.Get(out double roll, out double pitch, out double groundCourse) {
             roll = roll_sensor;
             pitch = pitch_sensor;
-            yaw = ground_course;
+            groundCourse = ground_course;
         }
 
         void IAhrs.Analogs(out double x, out double y, out double z) {
@@ -240,5 +260,7 @@ namespace QuadroLib.Ahrs {
             y = acc_y;
             z = acc_z;
         }
+
+        bool IAhrs.Ready { get { return this.imu_ok; } }
     }
 }

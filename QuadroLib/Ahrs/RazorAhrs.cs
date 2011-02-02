@@ -283,5 +283,7 @@ namespace QuadroLib.Ahrs {
             y = this.AccY;
             z = this.AccZ;
         }
+
+        bool IAhrs.Ready { get { return this.HasValidData; } }
     }
 }

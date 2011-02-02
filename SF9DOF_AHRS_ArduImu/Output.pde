@@ -56,11 +56,13 @@ void printdata(void)
   #else
       //  This section outputs a binary data message
       //  Conforms to new binary message standard (12/31/09)
-      byte IMU_buffer[20];
+      byte IMU_buffer[22];
       int tempint;
+      long templong;
       int ck;
       byte IMU_ck_a=0;
       byte IMU_ck_b=0;
+      
       Serial.print("DIYd");  // This is the message preamble
       IMU_buffer[0]=0x06; // Payload
       ck=6;
@@ -74,13 +76,16 @@ void printdata(void)
       IMU_buffer[4]=tempint&0xff;
       IMU_buffer[5]=(tempint>>8)&0xff;
       
-      tempint=ToDeg(yaw)*100;  //Yaw (degrees) * 100 in 2 bytes
+      templong=ToDeg(yaw)*100;  //Yaw (degrees) * 100 in 2 bytes
+      if(templong>18000) templong -=36000;
+      if(templong<-18000) templong +=36000;
+      tempint = templong;
       IMU_buffer[6]=tempint&0xff;
       IMU_buffer[7]=(tempint>>8)&0xff;
       
-     // for (int i=0;i<ck+2;i++) Serial.print (IMU_buffer[i]);
+      for (int i=0;i<ck+2;i++) Serial.print (IMU_buffer[i]);
       for (int i=0;i<ck+2;i++) {
-          Serial.print (IMU_buffer[i]);
+         // Serial.print (IMU_buffer[i]);
           IMU_ck_a+=IMU_buffer[i];  //Calculates checksums
           IMU_ck_b+=IMU_ck_a;       
       }

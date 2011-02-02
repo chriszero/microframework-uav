@@ -4,11 +4,11 @@ using System.IO.Ports;
 namespace Extensions {
     public static class Extensions {
 
-        private static byte[] tempBuffer = new byte[1];
+        /*private static byte[] tempBuffer = new byte[1];
         public static byte ReadByte(this SerialPort port) {
             port.Read(tempBuffer, 0, 1);
             return tempBuffer[0];
-        }
+        }*/
 
         public static double TotalMicroseconds(this TimeSpan ts) {
             return ts.Ticks * 0.01;

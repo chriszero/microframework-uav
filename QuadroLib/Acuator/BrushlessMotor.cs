@@ -1,16 +1,17 @@
 using GHIElectronics.NETMF.Hardware;
 using QuadroLib.Util;
 using Extensions;
+using System;
 
 
 namespace QuadroLib.Acuator {
     /// <summary>
     /// Class to controll an Electronic Speed Controler (ESC) for Airplanes (NO REVERSE)
     /// </summary>
-    public class BrushlessMotor {
+    public class BrushlessMotor : IDisposable {
         protected static uint Period;// = 20 * 1000 * 1000;
-        protected const uint Max = 20 * 100 * 1000;
-        protected const uint Min = 10 * 100 * 1000;
+        protected const uint Max = 18 * 100 * 1000;
+        protected const uint Min = 11 * 100 * 1000;
 
         // Scale
         private const uint Precalc = (Max - Min) / 255;
@@ -51,6 +52,10 @@ namespace QuadroLib.Acuator {
 
         public void Full() {
             this._pwmPin.SetPulse(Period, Max);
+        }
+
+        public void Dispose() {
+            _pwmPin.Dispose();
         }
     }
 

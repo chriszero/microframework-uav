@@ -6,5 +6,6 @@ namespace QuadroLib.Ahrs {
         void Get(out double roll, out double pitch, out double yaw); 
         void Analogs(out double x, out double y, out double z);
         void Acc(out double x, out double y, out double z);
+        bool Ready { get; }
     }
 }
